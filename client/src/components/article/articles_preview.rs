@@ -17,8 +17,12 @@ pub fn article_preview() -> Html {
             move |_| {
                 wasm_bindgen_futures::spawn_local(async move {
                     articles.set(
-                        fetch::<Vec<Preview>>("/api/rest/articles/v1".into(), Method::GET, None)
-                            .await,
+                        fetch::<Vec<Preview>>(
+                            "/api/rest/articles/preview/v1".into(),
+                            Method::GET,
+                            None,
+                        )
+                        .await,
                     );
                     loading.set(false)
                 })
@@ -47,7 +51,12 @@ fn content(articles: Result<Vec<Preview>, String>) -> Html {
                     <article class = "card" onclick={jump(article.id.unwrap())} key={article.id.unwrap()}>
                         <header>
                             <h3>{&article.title.clone().unwrap()}</h3>
-                            <span style="color:grey;">{article.create_time.clone().unwrap()}</span>
+                            <span style="color:grey;">{article.create_time.clone()}</span>
+                            <span style="color:grey;">{article.update_time.clone()}</span>
+                            <div>
+                                <span style="color:grey;">{article.user.name.clone()}</span>
+                                <img src={article.user.avatar_url.clone()}/>
+                            </div>
                         </header>
                     </article>
                 }

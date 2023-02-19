@@ -1,1 +1,1 @@
-pub mod articles;
+pub mod articles_preview;
