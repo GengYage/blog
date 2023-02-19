@@ -1,0 +1,3 @@
+[[proxy]]
+rewrite = "/api/rest"
+backend = "http://localhost:8081/api/rest"
