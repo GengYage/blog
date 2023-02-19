@@ -14,13 +14,15 @@ use crate::{
 
 #[web::post("/api/rest/article/add/v1")]
 pub async fn add_article(
-    _: User,
+    user: User,
     article: Json<Article>,
     state: State<Arc<AppState>>,
 ) -> Result<impl Responder, WebError> {
+    let user_id = user.id;
     sqlx::query!(
-        "insert into articles(title, content) values ($1, $2)",
+        "insert into articles(title, user_id, content) values ($1, $2, $3)",
         article.title,
+        user_id as i64,
         article.content
     )
     .execute(&state.db_pool)

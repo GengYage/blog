@@ -14,6 +14,7 @@ create sequence
 create table if not exists articles
 (
     id          bigint primary key default nextval('blog_articles_seq'::regclass),
+    user_id     bigint,
     title       varchar(255),
     content     text,
     create_time timestamp with time zone default now(),

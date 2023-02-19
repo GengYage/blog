@@ -23,6 +23,7 @@ pub async fn search_by_title_or_content(
     .iter()
     .map(|result| Article {
         id: Some(result.id as u64),
+        user_id: result.user_id.map(|a| a as u64),
         title: result.title.clone(),
         content: result.content.clone(),
         create_time: result.create_time,
@@ -50,6 +51,7 @@ pub async fn get_one(
 
     Ok(Json(Article {
         id: Some(result.id as u64),
+        user_id: result.user_id.map(|a| a as u64),
         title: result.title.clone(),
         content: result.content.clone(),
         create_time: result.create_time,

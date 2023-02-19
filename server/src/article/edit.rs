@@ -14,23 +14,33 @@ use crate::{
 
 #[web::post("/api/rest/article/update/v1")]
 pub async fn update_article(
-    _: User,
+    user: User,
     article: Json<Article>,
     state: State<Arc<AppState>>,
 ) -> Result<impl Responder, WebError> {
+    let user_id = user.id;
+
     let id = match article.id {
         Some(id) => id,
         None => return Err(WebError::BadRequest("请传入你要修改的文章id".into())),
     };
 
-    sqlx::query!(
-        "update articles set title = $1 , content = $2 where id = $3",
+    let affected_rows = sqlx::query!(
+        "update articles set title = $1 , content = $2 where id = $3 and user_id = $4",
         article.title,
         article.content,
         id as i64,
+        user_id as i64,
     )
     .execute(&state.db_pool)
-    .await?;
+    .await?
+    .rows_affected();
 
-    Ok(HttpResponse::Created().body(r#"{"result": "ok"}"#))
+    if affected_rows > 0 {
+        Ok(HttpResponse::Created().body(r#"{"result": "ok"}"#))
+    } else {
+        Err(WebError::BadRequest(format!(
+            "article:{id} is not belong to you or is not exits"
+        )))
+    }
 }

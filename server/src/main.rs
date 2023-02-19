@@ -39,6 +39,7 @@ async fn main() {
             .state(Arc::clone(&app_state))
             .wrap(middleware::Logger::default())
             .service(article::view::get_articles)
+            .service(article::view::get_articles_preview)
             .service(article::new::add_article)
             .service(article::edit::update_article)
             .service(article::search::search_by_title_or_content)
