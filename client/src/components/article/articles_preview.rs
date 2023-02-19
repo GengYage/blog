@@ -1,14 +1,16 @@
-use gloo::{console::log, net::http::Method};
-use yew::{
-    function_component, html, use_effect_with_deps, use_state, Callback, Html, UseStateHandle,
-};
+use gloo::net::http::Method;
+use yew::prelude::*;
+use yew_router::prelude::*;
 
-use crate::{fetch::fetch, models::article::ArticlePreview as Preview};
+use crate::{app::Route, fetch::fetch, models::article::ArticlePreview as Preview};
 
 #[function_component(ArticlePreview)]
 pub fn article_preview() -> Html {
     let loading = use_state(|| true);
     let articles: UseStateHandle<Result<Vec<Preview>, String>> = use_state(|| Err("".into()));
+
+    // 用于跳转到其他组件
+    let navigator = use_navigator().unwrap();
 
     {
         let loading = loading.clone();
@@ -35,20 +37,22 @@ pub fn article_preview() -> Html {
         if*loading{
             <p>{"Loading ..."}</p>
         } else{
-            {content((*articles).clone())}
+            {content(navigator,(*articles).clone())}
         }
     }
 }
 
-fn content(articles: Result<Vec<Preview>, String>) -> Html {
-    let jump = |_: u64| Callback::from(|_| log!("clicked!"));
+fn content(navigator: Navigator, articles: Result<Vec<Preview>, String>) -> Html {
+    let jump = |navigator: Navigator, article_id: i64| {
+        Callback::from(move |_| navigator.push(&Route::ArticleViewer { article_id }))
+    };
 
     match articles {
         Ok(articles) => articles
             .iter()
             .map(|article| {
                 html! {
-                    <article class = "card" onclick={jump(article.id.unwrap())} key={article.id.unwrap()}>
+                    <article class = "card" onclick={jump(navigator.clone(), article.id.unwrap() as i64)} key={article.id.unwrap()}>
                         <header>
                             <h3>{&article.title.clone().unwrap()}</h3>
                             <span style="color:grey;">{article.create_time.clone()}</span>
