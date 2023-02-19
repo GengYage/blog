@@ -1,6 +1,6 @@
 use yew::{function_component, html, use_context, Callback, Html};
 
-use crate::components::card::Card;
+use crate::components::{article::articles::ArticlePreview, card::Card};
 
 #[function_component(Home)]
 pub fn home() -> Html {
@@ -9,8 +9,8 @@ pub fn home() -> Html {
         .emit("Home".into());
 
     html! {
-        <Card title={"Welcom!"}>
-            <p>{"a simple web blog write in rust"}</p>
+        <Card title={"Articles"}>
+            <ArticlePreview/>
         </Card>
     }
 }
